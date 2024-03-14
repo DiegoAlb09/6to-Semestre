@@ -8,11 +8,17 @@
 
 #Librerias
 import time
+import random
 
 inicio = time.time()
 
-#Definimos un arreglo desordenado de U = 20 elementos
-arregloU = [13,-3,-25,20,-3,-16,-23,18,20,-7,12,-5,-22,15,-4,7,10,-5,-13,-15]
+tamañoU = 100
+
+#Generamos el arreglo U con numeros aleatorios
+arregloU = []
+for i in range(tamañoU):
+    i = random.randint(-100, 100)
+    arregloU += [i]
 
 #Leemos el arreglo
 def leerArreglo(U):
