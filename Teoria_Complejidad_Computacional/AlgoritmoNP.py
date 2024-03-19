@@ -7,21 +7,40 @@
 #Alumno: Diego Alberto Aranda Gonzalez
 
 # Importamos las librerias
-import random
 import numpy as np
+import time
 
-menor = np.inf
-tamañoU = 20
-arregloU = []
+n = 20
+U = []
+# Generamos un arreglo de n elementos
+for i in range(n):
+   i = np.random.randint(1,100)
+   U.append(i)
 
-#Generamos cadenas binarias con el codigo de gray
-def gray(tamañoU):
-    arregloUG = []
-    arregloU = random.sample(range(1, 100), tamañoU)
-    #Pasamos el arreglo a binario
-    #Pasamos el arreglo a gray
-    for i in range(tamañoU):
-        arregloUG.append(bin(arregloU[i] ^ (arregloU[i] >> 1))[2:])
-    return arregloUG
+num = pow(2,n-1)
+div = num
+g = []
+for i in range(n):
+    g.append(0)
 
-print("El arreglo U es: ", gray(tamañoU))
+sumA = 0
+sumB = 0
+sumT = 0
+menor = 100000
+
+combinacion = []
+
+while num != 0:
+   numG = num
+   divG = div
+   print("Numero:", num)
+   for m in range(divG):
+        if numG % 2 == 1:
+             g[m] = 1
+        else:
+             g[m] = 0
+        numG = int(numG / 2)
+
+    
+
+  
