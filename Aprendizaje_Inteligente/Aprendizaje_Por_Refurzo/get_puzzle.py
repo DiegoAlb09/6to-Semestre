@@ -1,43 +1,78 @@
-import requests
-from bs4 import BeautifulSoup
+#Generamos sudoku de 9x9 y los almacenamos en un .csv
 
-def get_sudoku(p_link, s_link):
-    """
-    Return a random Sudoku puzzle and solution, given puzzle link and solution
-    """
-    req = requests.get(p_link)
-    c = req.content
-    soup = BeautifulSoup(c, 'html.parser')
+# Importamos las librerias necesarias
+import numpy as np
+import pandas as pd
+import random
+import copy
 
-    grid_txt = soup.find_all('div', {'class':'grid'})[0].text
-    puzzle_no = grid_txt[str.find(grid_txt, 'Showing puzzle')+23:str.find(grid_txt, 'Puzzletype')]
+# Sudoku vacio
+sudoku = np.zeros((9,9))
 
-    rows = soup.find_all('tr', {'class':'grid'})
-    puzzle = []
-    for row in rows:
-        cols = row.find_all('td')
-        for col in cols:
-            txt = col.text
-            if txt != '\xa0':
-                puzzle.append(txt)
-            else:
-                puzzle.append('0')
-    puzzle = ' '.join(puzzle)
+# Funcion para imprimir el sudoku
+def print_sudoku(sudoku):
+    for i in range(9):
+        for j in range(9):
+            print(sudoku[i][j], end = " ")
+        print()
+
+# Funcion para verificar si el numero es valido
+def is_valid(sudoku, row, col, num):
+    for i in range(9):
+        if sudoku[row][i] == num or sudoku[i][col] == num:
+            return False
+    start_row = row - row % 3
+    start_col = col - col % 3
+    for i in range(3):
+        for j in range(3):
+            if sudoku[i + start_row][j + start_col] == num:
+                return False
+    return True
+
+# Funcion para resolver el sudoku
+def solve_sudoku(sudoku):
+    find = find_empty(sudoku)
+    if not find:
+        return True
+    else:
+        row, col = find
+    for i in range(1, 10):
+        if is_valid(sudoku, row, col, i):
+            sudoku[row][col] = i
+            if solve_sudoku(sudoku):
+                return True
+            sudoku[row][col] = 0
+    return False
+
+# Funcion para encontrar la celda vacia
+def find_empty(sudoku):
+    for i in range(9):
+        for j in range(9):
+            if sudoku[i][j] == 0:
+                return (i, j)
+    return None
 
 
-    req_sol = requests.get(s_link.format(puzzle_no))
-    c = req_sol.content
-    soup = BeautifulSoup(c, 'html.parser')
-    rows = soup.find_all('tr', {'class':'grid'})
-    solution = []
-    for row in rows:
-        cols = row.find_all('td')
-        for col in cols:
-            txt = col.text
-            if txt != '\xa0':
-                solution.append(txt)
-            else:
-                solution.append('0')
-    solution = ' '.join(solution)
+# Generamos un sudoku aleatorio
+def generate_sudoku():
+    sudoku = np.zeros((9,9), dtype=int)
+    solve_sudoku(sudoku)
+    for i in range(9):
+        for j in range(9):
+            if random.random() < 0.5:
+                sudoku[i][j] = 0
+    return sudoku
 
-    return puzzle, solution
+# Generamos un sudoku aleatorio
+# Almacenamos 10 sudokus en un .csv
+for i in range(10):
+    sudoku = generate_sudoku()
+    df = pd.DataFrame(sudoku)
+    df.to_csv('sudoku_{}.csv'.format(i), index=False, header=False)
+
+# Imprimimos el sudoku
+print("Sudoku sin resolver:")
+print_sudoku(sudoku)
+print("\n")
+print("Sudoku resuelto:")
+solve_sudoku(sudoku)
